@@ -30,6 +30,7 @@ const cardVariants = {
 const Home = () => {
   const [search, setSearch] = useState("lodki");
   const [dataToShow, setDataToShow] = useState(initialCounts);
+  const [searchHistory, setSearchHistory] = useState([]);
 
   const handleViewMore = (section) => {
     setDataToShow((prev) => ({
@@ -40,7 +41,7 @@ const Home = () => {
 
   return (
     <div className="w-full h-full">
-      <header className="relative w-full md:h-[930px] lg:h-[850px]">
+      <header className={`relative w-full  ${searchHistory ? "py-3 md:h-[1040px] lg:h-[950px]" : "md:h-[930px] lg:h-[850px]"}`}>
         <div
           className="absolute inset-0 z-0 bg-cover bg-center"
           style={{ backgroundImage: `url('/main-bg-yacht.jpg')` }}
@@ -86,8 +87,17 @@ const Home = () => {
             Купувай и продавай — всичко за морето: лодки, яхти, джетове и
             оборудване на едно място.
           </motion.h2>
-          <motion.div className="w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-            <SearchForm type={search} />
+          <motion.div
+            className="w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <SearchForm
+              type={search}
+              searchHistory={searchHistory}
+              setSearchHistory={setSearchHistory}
+            />
           </motion.div>
         </motion.div>
       </header>
@@ -135,7 +145,9 @@ const Home = () => {
           </motion.div>
         </section>
         <section>
-          <h2 className="text-cyan-600 text-2xl font-bold">Най-ново от двигатели</h2>
+          <h2 className="text-cyan-600 text-2xl font-bold">
+            Най-ново от двигатели
+          </h2>
           <motion.div
             key={`dvigateli-${dataToShow.dvigateli}`}
             initial={{ x: 100, opacity: 0 }}
@@ -143,11 +155,23 @@ const Home = () => {
             transition={{ type: "spring", stiffness: 120 }}
             className="mt-3"
           >
-            <motion.div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4" variants={containerVariants} initial="hidden" animate="visible">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
               <AnimatePresence>
                 {data.slice(0, dataToShow.dvigateli).map((ad, idx) => {
                   return (
-                    <motion.div key={ad.id || `${idx}-dv`} variants={cardVariants} initial="hidden" animate="visible" exit="exit" layout>
+                    <motion.div
+                      key={ad.id || `${idx}-dv`}
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      layout
+                    >
                       <HomeCard ad={ad} />
                     </motion.div>
                   );
@@ -155,14 +179,19 @@ const Home = () => {
               </AnimatePresence>
             </motion.div>
             <div className="flex justify-end mt-2">
-              <button onClick={() => handleViewMore("dvigateli")} className="text-cyan-600 underline cursor-pointer">
+              <button
+                onClick={() => handleViewMore("dvigateli")}
+                className="text-cyan-600 underline cursor-pointer"
+              >
                 Виж още
               </button>
             </div>
           </motion.div>
         </section>
         <section>
-          <h2 className="text-cyan-600 text-2xl font-bold">Най-ново от сонари</h2>
+          <h2 className="text-cyan-600 text-2xl font-bold">
+            Най-ново от сонари
+          </h2>
           <motion.div
             key={`sonari-${dataToShow.sonari}`}
             initial={{ x: 100, opacity: 0 }}
@@ -170,11 +199,23 @@ const Home = () => {
             transition={{ type: "spring", stiffness: 120 }}
             className="mt-3"
           >
-            <motion.div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4" variants={containerVariants} initial="hidden" animate="visible">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
               <AnimatePresence>
                 {data.slice(0, dataToShow.sonari).map((ad, idx) => {
                   return (
-                    <motion.div key={ad.id || `${idx}-son`} variants={cardVariants} initial="hidden" animate="visible" exit="exit" layout>
+                    <motion.div
+                      key={ad.id || `${idx}-son`}
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      layout
+                    >
                       <HomeCard ad={ad} />
                     </motion.div>
                   );
@@ -182,14 +223,19 @@ const Home = () => {
               </AnimatePresence>
             </motion.div>
             <div className="flex justify-end mt-2">
-              <button onClick={() => handleViewMore("sonari")} className="text-cyan-600 underline cursor-pointer">
+              <button
+                onClick={() => handleViewMore("sonari")}
+                className="text-cyan-600 underline cursor-pointer"
+              >
                 Виж още
               </button>
             </div>
           </motion.div>
         </section>
         <section>
-          <h2 className="text-cyan-600 text-2xl font-bold">Най-ново от лодки</h2>
+          <h2 className="text-cyan-600 text-2xl font-bold">
+            Най-ново от лодки
+          </h2>
           <motion.div
             key={`lodki-${dataToShow.lodki}`}
             initial={{ x: 100, opacity: 0 }}
@@ -197,11 +243,23 @@ const Home = () => {
             transition={{ type: "spring", stiffness: 120 }}
             className="mt-3"
           >
-            <motion.div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4" variants={containerVariants} initial="hidden" animate="visible">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
               <AnimatePresence>
                 {data.slice(0, dataToShow.lodki).map((ad, idx) => {
                   return (
-                    <motion.div key={ad.id || `${idx}-lod`} variants={cardVariants} initial="hidden" animate="visible" exit="exit" layout>
+                    <motion.div
+                      key={ad.id || `${idx}-lod`}
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      layout
+                    >
                       <HomeCard ad={ad} />
                     </motion.div>
                   );
@@ -209,7 +267,10 @@ const Home = () => {
               </AnimatePresence>
             </motion.div>
             <div className="flex justify-end mt-2">
-              <button onClick={() => handleViewMore("lodki")} className="text-cyan-600 underline cursor-pointer">
+              <button
+                onClick={() => handleViewMore("lodki")}
+                className="text-cyan-600 underline cursor-pointer"
+              >
                 Виж още
               </button>
             </div>
