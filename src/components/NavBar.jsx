@@ -144,7 +144,7 @@ const NavBar = () => {
             <div
               ref={profileRef}
               onClick={() => setAuthModal((prev) => !prev)}
-              className=" items-end cursor-pointer hidden sm:flex"
+              className=" items-end cursor-pointer flex"
             >
               <IoPersonSharp className="text-white text-2xl" />
               <IoMdArrowDropdown className="text-white text-md" />
@@ -159,7 +159,7 @@ const NavBar = () => {
           </div>
 
           {/* Desktop Auth Dropdown */}
-          <div className="absolute top-16 right-4 xl:right-0" ref={dropdownRef}>
+          <div className="absolute top-16 right-4 xl:right-[120px]" ref={dropdownRef}>
             <AuthDropDown isOpen={authModal} />
           </div>
         </div>

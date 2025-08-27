@@ -381,20 +381,20 @@ const SearchForm = ({ type = "lodki" }) => {
                     <button
                       type="button"
                       onClick={() => window.location.reload()}
-                      className=" text-orange-600 text-sm font-semibold hover:text-orange-700 transition-colors"
+                      className=" text-orange-600 text-xs md:text-sm font-semibold hover:text-orange-700 transition-colors"
                     >
                       ИЗЧИСТИ ФИЛТРИ
                     </button>
                     <button
                       type="button"
-                      className=" text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors"
+                      className=" text-blue-600 text-xs md:text-sm font-semibold hover:text-blue-700 transition-colors"
                     >
                       ПОДРОБНО ТЪРСЕНЕ
                     </button>
                   </div>{" "}
                   <button
                     type="submit"
-                    className="w-full sm:w-auto px-44 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-3"
+                    className="w-full sm:w-auto sm:px-44 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-3"
                   >
                     <FaSearch />
                     ТЪРСИ

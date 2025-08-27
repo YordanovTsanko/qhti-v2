@@ -68,7 +68,7 @@ const Home = () => {
                   onClick={() => setSearch(category.eu)}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
-                  className="py-2 px-4 flex items-center gap-2 rounded-md border border-white text-white hover:bg-white hover:text-blue-800 transition duration-500"
+                  className="md:py-2 py-1 px-4 flex items-center text-sm md:text-md md:gap-2 gap-1 rounded-md border border-white text-white hover:bg-white hover:text-blue-800 transition duration-500"
                   aria-label={`Категория ${category.eu}`}
                 >
                   {<category.Icon />}
