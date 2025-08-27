@@ -1,16 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import { categories, data } from "../utils/utils";
 import SearchForm from "../components/SearchForm";
 import HomeCard from "../components/Ads/HomeCard";
 import { motion, AnimatePresence } from "framer-motion";
-
-const initialCounts = {
-  new: 12,
-  dvigateli: 12,
-  sonari: 12,
-  lodki: 12,
-};
 
 const containerVariants = {
   hidden: {},
@@ -27,21 +20,46 @@ const cardVariants = {
   exit: { opacity: 0, y: -20 },
 };
 
+const getInitialCount = () => {
+  const width = window.innerWidth;
+  if (width >= 1280) return 10;
+  if (width >= 1024) return 8;
+  if (width >= 768) return 6;
+  if (width >= 640) return 4;
+  return 2;
+};
+
 const Home = () => {
   const [search, setSearch] = useState("lodki");
-  const [dataToShow, setDataToShow] = useState(initialCounts);
   const [searchHistory, setSearchHistory] = useState([]);
+  const [dataToShow, setDataToShow] = useState({});
+
+  const updateCounts = () => {
+    const initial = getInitialCount();
+    setDataToShow({
+      new: initial,
+      dvigateli: initial,
+      sonari: initial,
+      lodki: initial,
+    });
+  };
+
+  useEffect(() => {
+    updateCounts();
+    window.addEventListener("resize", updateCounts);
+    return () => window.removeEventListener("resize", updateCounts);
+  }, []);
 
   const handleViewMore = (section) => {
     setDataToShow((prev) => ({
       ...prev,
-      [section]: Math.min(data.length, (prev[section] || 0) + 12),
+      [section]: Math.min(data.length, (prev[section] || 0) + getInitialCount()),
     }));
   };
 
   return (
     <div className="w-full h-full">
-      <header className={`relative w-full  ${searchHistory ? "py-3 md:h-[1040px] lg:h-[950px]" : "md:h-[930px] lg:h-[850px]"}`}>
+      <header className={`relative w-full lg:px-32 ${searchHistory ? "py-3 md:h-[1040px] lg:h-[950px]" : "md:h-[930px] lg:h-[850px]"}`}>
         <div
           className="absolute inset-0 z-0 bg-cover bg-center"
           style={{ backgroundImage: `url('/main-bg-yacht.jpg')` }}
@@ -102,26 +120,31 @@ const Home = () => {
         </motion.div>
       </header>
       <main className="max-w-[1280px] mx-auto px-4 xl:px-0 mt-10 space-y-10">
-        <section>
-          <h2 className="text-cyan-600 text-2xl font-bold">Най-нови обяви</h2>
-          <motion.div
-            key={`new-${dataToShow.new}`}
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 120 }}
-            className="mt-3"
-          >
+        {[
+          { key: "new", title: "Най-нови обяви" },
+          { key: "dvigateli", title: "Най-ново от двигатели" },
+          { key: "sonari", title: "Най-ново от сонари" },
+          { key: "lodki", title: "Най-ново от лодки" },
+        ].map((section) => (
+          <section className="px-32" key={section.key}>
+            <h2 className="text-cyan-600 text-2xl font-bold">{section.title}</h2>
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
+              key={`${section.key}-${dataToShow[section.key]}`}
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 120 }}
+              className="mt-3"
             >
-              <AnimatePresence>
-                {data.slice(0, dataToShow.new).map((ad, idx) => {
-                  return (
+              <motion.div
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <AnimatePresence>
+                  {data.slice(0, dataToShow[section.key] || 0).map((ad, idx) => (
                     <motion.div
-                      key={ad.id || `${idx}-new`}
+                      key={ad.id || `${idx}-${section.key}`}
                       variants={cardVariants}
                       initial="hidden"
                       animate="visible"
@@ -130,152 +153,20 @@ const Home = () => {
                     >
                       <HomeCard ad={ad} />
                     </motion.div>
-                  );
-                })}
-              </AnimatePresence>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+              <div className="flex justify-end mt-2">
+                <button
+                  onClick={() => handleViewMore(section.key)}
+                  className="text-cyan-600 underline cursor-pointer"
+                >
+                  Виж още
+                </button>
+              </div>
             </motion.div>
-            <div className="flex justify-end mt-2">
-              <button
-                onClick={() => handleViewMore("new")}
-                className="text-cyan-600 underline cursor-pointer"
-              >
-                Виж още
-              </button>
-            </div>
-          </motion.div>
-        </section>
-        <section>
-          <h2 className="text-cyan-600 text-2xl font-bold">
-            Най-ново от двигатели
-          </h2>
-          <motion.div
-            key={`dvigateli-${dataToShow.dvigateli}`}
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 120 }}
-            className="mt-3"
-          >
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <AnimatePresence>
-                {data.slice(0, dataToShow.dvigateli).map((ad, idx) => {
-                  return (
-                    <motion.div
-                      key={ad.id || `${idx}-dv`}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      layout
-                    >
-                      <HomeCard ad={ad} />
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </motion.div>
-            <div className="flex justify-end mt-2">
-              <button
-                onClick={() => handleViewMore("dvigateli")}
-                className="text-cyan-600 underline cursor-pointer"
-              >
-                Виж още
-              </button>
-            </div>
-          </motion.div>
-        </section>
-        <section>
-          <h2 className="text-cyan-600 text-2xl font-bold">
-            Най-ново от сонари
-          </h2>
-          <motion.div
-            key={`sonari-${dataToShow.sonari}`}
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 120 }}
-            className="mt-3"
-          >
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <AnimatePresence>
-                {data.slice(0, dataToShow.sonari).map((ad, idx) => {
-                  return (
-                    <motion.div
-                      key={ad.id || `${idx}-son`}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      layout
-                    >
-                      <HomeCard ad={ad} />
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </motion.div>
-            <div className="flex justify-end mt-2">
-              <button
-                onClick={() => handleViewMore("sonari")}
-                className="text-cyan-600 underline cursor-pointer"
-              >
-                Виж още
-              </button>
-            </div>
-          </motion.div>
-        </section>
-        <section>
-          <h2 className="text-cyan-600 text-2xl font-bold">
-            Най-ново от лодки
-          </h2>
-          <motion.div
-            key={`lodki-${dataToShow.lodki}`}
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 120 }}
-            className="mt-3"
-          >
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <AnimatePresence>
-                {data.slice(0, dataToShow.lodki).map((ad, idx) => {
-                  return (
-                    <motion.div
-                      key={ad.id || `${idx}-lod`}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      layout
-                    >
-                      <HomeCard ad={ad} />
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </motion.div>
-            <div className="flex justify-end mt-2">
-              <button
-                onClick={() => handleViewMore("lodki")}
-                className="text-cyan-600 underline cursor-pointer"
-              >
-                Виж още
-              </button>
-            </div>
-          </motion.div>
-        </section>
+          </section>
+        ))}
       </main>
     </div>
   );
