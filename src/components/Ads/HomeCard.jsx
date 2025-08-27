@@ -1,10 +1,14 @@
 import React from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { formatDate } from "../../utils/utils";
+import { useNavigate } from "react-router-dom";
 
 const HomeCard = ({ ad }) => {
+  const navigate = useNavigate()
   return (
-    <div className="border cursor-pointer border-cyan-700 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition relative">
+    <div 
+    onClick={()=>navigate(`/ads/${ad.id}`)}
+    className="border cursor-pointer border-cyan-700 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition relative">
 
         {ad.promo &&<div className="absolute top-0 right-0 bg-cyan-700 text-white py-1 px-2 text-xs font-semibold"><p>ПРОМО</p></div>}
       {/* Image always flush to the border */}
