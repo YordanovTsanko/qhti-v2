@@ -115,7 +115,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state) => {
-        state.status = "success";
+        state.status = "succeeded";
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = "failed";
@@ -127,7 +127,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = "success";
+        state.status = "succeeded";
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
         state.expiresIn = action.payload.expiresIn;
@@ -157,7 +157,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
-        state.status = "success";
+        state.status = "succeeded";
         state.user = action.payload;
       })
       .addCase(fetchCurrentUser.rejected, (state, action) => {

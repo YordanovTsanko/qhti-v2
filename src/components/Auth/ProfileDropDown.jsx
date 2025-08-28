@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/auth/authSlice";
 import { useToastContext } from "../Toast/ToastProvider";
 
@@ -29,6 +29,8 @@ const ProfileDropDown = ({ isOpen, closeDropdown }) => {
   const dispatch = useDispatch();
   const { showToast } = useToastContext();
 
+  const { user, status } = useSelector((state) => state.auth);
+
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
@@ -43,12 +45,22 @@ const ProfileDropDown = ({ isOpen, closeDropdown }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="w-[200px] bg-white shadow-lg p-4 rounded-lg flex flex-col gap-2 z-50"
+          className="min-w-[200px] bg-white shadow-lg p-4 rounded-lg flex flex-col gap-2 z-50"
           variants={dropdownVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
         >
+          <div className="flex items-center gap-2">
+            <img
+              src="profile-default.png"
+              alt="ProfileImage"
+              className="w-10 h-10 rounded-full"
+            />
+            <h3 className="text-md">{status === "succeeded" ? user?.name : "Грешка"}</h3>
+          </div>
+          <hr class="h-px my-1 bg-gray-200 border-0 dark:bg-gray-700" />
+
           {links.map((link) =>
             link.isLogout ? (
               <button

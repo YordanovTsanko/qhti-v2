@@ -140,11 +140,11 @@ const LoginForm = ({ switchForm }) => {
 
             <h2 className="text-center text-gray-600">ИЛИ</h2>
             <div className="flex flex-col sm:flex-row gap-2 mt-1">
-              <button className="w-full rounded-lg flex items-center gap-2 bg-[#EA4335] p-2 justify-center text-white hover:bg-red-600 duration-500 transition">
+              <button type="button" className="w-full rounded-lg flex items-center gap-2 bg-[#EA4335] p-2 justify-center text-white hover:bg-red-600 duration-500 transition">
                 <FaGoogle />
                 Влез с Google
               </button>
-              <button className="w-full rounded-lg flex items-center gap-2 bg-[#1877F2] p-2 justify-center text-white hover:bg-blue-600 duration-500 transition">
+              <button type="button" className="w-full rounded-lg flex items-center gap-2 bg-[#1877F2] p-2 justify-center text-white hover:bg-blue-600 duration-500 transition">
                 <FaFacebook />
                 Влез с Facebook
               </button>
