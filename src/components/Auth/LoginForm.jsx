@@ -1,9 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaEnvelope, FaFacebook, FaGoogle, FaLock } from "react-icons/fa";
+import { MdOutlineError } from "react-icons/md";
 import { useToastContext } from "../Toast/ToastProvider";
 import { useDispatch } from "react-redux";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { loginUser } from "../../redux/auth/authSlice";
 
@@ -23,8 +24,12 @@ const LoginForm = ({ switchForm }) => {
   };
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email("Невалиден имейл").required("Задължително"),
-    password: Yup.string().min(6, "Минимум 6 символа").required("Задължително"),
+    email: Yup.string()
+      .email("Невалиден имейл")
+      .required("Имейла е задължителен"),
+    password: Yup.string()
+      .min(6, "Минимум 6 символа")
+      .required("Паролата е задължителена"),
   });
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -58,8 +63,10 @@ const LoginForm = ({ switchForm }) => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
+        validateOnBlur={false}
+        validateOnChange={false}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, errors, submitCount }) => (
           <Form className="flex flex-col gap-4">
             <h2 className="text-3xl font-bold text-center text-cyan-600 mb-6">
               Вход
@@ -75,11 +82,6 @@ const LoginForm = ({ switchForm }) => {
                   className="w-full outline-none bg-transparent"
                 />
               </div>
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-sm text-red-500"
-              />
             </div>
 
             <div className="flex flex-col">
@@ -92,11 +94,6 @@ const LoginForm = ({ switchForm }) => {
                   className="w-full outline-none bg-transparent"
                 />
               </div>
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-sm text-red-500"
-              />
             </div>
 
             <button
@@ -106,14 +103,28 @@ const LoginForm = ({ switchForm }) => {
             >
               {isSubmitting ? "Влизане..." : "Вход"}
             </button>
+
+            {submitCount > 0 && Object.keys(errors).length > 0 && (
+              <div className=" space-y-2 bg-red-50 border border-red-200 rounded p-3">
+                {Object.entries(errors).map(([key, msg]) => (
+                  <div
+                    key={key}
+                    className="flex items-center gap-1 text-sm text-red-700"
+                  >
+                    <MdOutlineError className="mt-0.5" />
+                    <span>{msg}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className=" mt-2 flex flex-col gap-2 sm:gap-0 sm:flex-row justify-between">
-              <p className="text-sm text-gray-600 sm:text-center">
+              <p className="text-sm text-gray-600 text-center">
                 Забравена парола?{" "}
                 <span className="text-cyan-600 cursor-pointer hover:underline">
                   Промени
                 </span>
               </p>
-              <p className="text-sm text-gray-600 sm:text-center">
+              <p className="text-sm text-gray-600 text-center">
                 Нямате акаунт?{" "}
                 <span
                   className="text-cyan-600 cursor-pointer hover:underline"
@@ -123,6 +134,7 @@ const LoginForm = ({ switchForm }) => {
                 </span>
               </p>
             </div>
+
             <h2 className="text-center text-gray-600">ИЛИ</h2>
             <div className="flex flex-col sm:flex-row gap-2 mt-1">
               <button className="w-full rounded-lg flex items-center gap-2 bg-[#EA4335] p-2 justify-center text-white hover:bg-red-600 duration-500 transition">

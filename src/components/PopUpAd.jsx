@@ -7,7 +7,7 @@ const PopUpAd = () => {
   useEffect(() => {
     const firstTimeout = setTimeout(() => setShow(true), 2000);
 
-    const interval = setInterval(() => setShow(true), 8000);
+    const interval = setInterval(() => setShow(true), 20000);
 
     return () => {
       clearTimeout(firstTimeout);

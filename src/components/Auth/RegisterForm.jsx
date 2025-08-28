@@ -1,9 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
+import { MdOutlineError } from "react-icons/md";
 import { useToastContext } from "../Toast/ToastProvider";
 import { useDispatch } from "react-redux";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { registerUser } from "../../redux/auth/authSlice";
 
@@ -27,15 +28,13 @@ const RegisterForm = ({ switchForm, userType, setUserType }) => {
   };
 
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .min(2, "Минимум 2 символа")
-      .required("Задължително"),
-    lastName: Yup.string().min(2, "Минимум 2 символа").required("Задължително"),
-    email: Yup.string().email("Невалиден имейл").required("Задължително"),
-    password: Yup.string().min(6, "Минимум 6 символа").required("Задължително"),
+    firstName: Yup.string().min(2, "Минимум 2 символа").required("Името е задължително"),
+    lastName: Yup.string().min(2, "Минимум 2 символа").required("Фамилията е задължително"),
+    email: Yup.string().email("Невалиден имейл").required("Имейла е задължителен"),
+    password: Yup.string().min(6, "Минимум 6 символа").required("Паролата е задължително"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Паролите не съвпадат")
-      .required("Задължително"),
+      .required("Повторната парола е задължително"),
     companyName:
       userType === "company"
         ? Yup.string().min(2, "Минимум 2 символа").required("Задължително")
@@ -55,15 +54,22 @@ const RegisterForm = ({ switchForm, userType, setUserType }) => {
       showToast("✅ Регистрацията е успешна!");
       resetForm();
     } catch (err) {
-        console.log(err);
-        
-      const message =
-        err || "Възникна грешка при регистрацията.";
+      console.log(err);
+      const message = err || "Възникна грешка при регистрацията.";
       showToast(`❌ ${message}`);
     } finally {
       setSubmitting(false);
     }
   };
+
+  const orderedKeys = [
+    "firstName",
+    "lastName",
+    "email",
+    "password",
+    "confirmPassword",
+    "companyName",
+  ];
 
   return (
     <motion.div
@@ -79,163 +85,159 @@ const RegisterForm = ({ switchForm, userType, setUserType }) => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
+        validateOnBlur={false}
+        validateOnChange={false}
       >
-        {({ isSubmitting }) => (
-          <Form className="flex flex-col gap-4">
-            <h2 className="text-3xl font-bold text-center text-cyan-600 mb-6">
-              Регистрация
-            </h2>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex flex-col">
-                <div className="flex items-center border rounded-lg px-3 py-2">
+        {({ isSubmitting, errors, submitCount }) => {
+          const errorEntries = orderedKeys
+            .filter((k) => errors[k])
+            .map((k) => [k, errors[k]])
+            .concat(
+              Object.entries(errors).filter(([k]) => !orderedKeys.includes(k))
+            );
+
+          return (
+            <Form className="flex flex-col gap-4">
+              <h2 className="text-3xl font-bold text-center text-cyan-600 mb-6">
+                Регистрация
+              </h2>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-col">
+                  <div className="flex items-center border rounded-lg px-3 py-2">
+                    <FaUser className="text-gray-400 mr-2" />
+                    <Field
+                      name="firstName"
+                      type="text"
+                      placeholder="Име"
+                      className="w-full outline-none bg-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <div className="flex items-center border rounded-lg px-3 py-2">
+                    <FaUser className="text-gray-400 mr-2" />
+                    <Field
+                      name="lastName"
+                      type="text"
+                      placeholder="Фамилия"
+                      className="w-full outline-none bg-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <div className="flex items-center border rounded-lg px-3 py-2 col-span-2">
+                    <FaEnvelope className="text-gray-400 mr-2" />
+                    <Field
+                      name="email"
+                      type="email"
+                      placeholder="Имейл"
+                      className="w-full outline-none bg-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <div className="flex items-center border rounded-lg px-3 py-2 col-span-2">
+                    <FaLock className="text-gray-400 mr-2" />
+                    <Field
+                      name="password"
+                      type="password"
+                      placeholder="Парола"
+                      className="w-full outline-none bg-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <div className="flex items-center border rounded-lg px-3 py-2">
+                    <FaLock className="text-gray-400 mr-2" />
+                    <Field
+                      name="confirmPassword"
+                      type="password"
+                      placeholder="Потвърдете паролата"
+                      className="w-full outline-none bg-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setUserType("person")}
+                  className={`flex-1 py-2 rounded-lg border ${
+                    userType === "person"
+                      ? "bg-cyan-600 text-white"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  Частно лице
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserType("company")}
+                  className={`flex-1 py-2 rounded-lg border ${
+                    userType === "company"
+                      ? "bg-cyan-600 text-white"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  Фирма
+                </button>
+              </div>
+
+              {userType === "company" && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center border rounded-lg px-3 py-2"
+                >
                   <FaUser className="text-gray-400 mr-2" />
                   <Field
-                    name="firstName"
+                    name="companyName"
                     type="text"
-                    placeholder="Име"
+                    placeholder="Име на фирма"
                     className="w-full outline-none bg-transparent"
                   />
-                </div>
-                <ErrorMessage
-                  name="firstName"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
+                </motion.div>
+              )}
 
-              <div className="flex flex-col">
-                <div className="flex items-center border rounded-lg px-3 py-2">
-                  <FaUser className="text-gray-400 mr-2" />
-                  <Field
-                    name="lastName"
-                    type="text"
-                    placeholder="Фамилия"
-                    className="w-full outline-none bg-transparent"
-                  />
-                </div>
-                <ErrorMessage
-                  name="lastName"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              <div className="flex flex-col col-span-2">
-                <div className="flex items-center border rounded-lg px-3 py-2 col-span-2">
-                  <FaEnvelope className="text-gray-400 mr-2" />
-                  <Field
-                    name="email"
-                    type="email"
-                    placeholder="Имейл"
-                    className="w-full outline-none bg-transparent"
-                  />
-                </div>
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              <div className="flex flex-col col-span-2">
-                <div className="flex items-center border rounded-lg px-3 py-2 col-span-2">
-                  <FaLock className="text-gray-400 mr-2" />
-                  <Field
-                    name="password"
-                    type="password"
-                    placeholder="Парола"
-                    className="w-full outline-none bg-transparent"
-                  />
-                </div>
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-              <div className="flex flex-col col-span-2">
-                <div className="flex items-center border rounded-lg px-3 py-2">
-                  <FaLock className="text-gray-400 mr-2" />
-                  <Field
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="Потвърдете паролата"
-                    className="w-full outline-none bg-transparent"
-                  />
-                </div>
-                <ErrorMessage
-                  name="confirmPassword"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-            </div>
-            <div className="flex gap-4 mt-2">
               <button
-                type="button"
-                onClick={() => setUserType("person")}
-                className={`flex-1 py-2 rounded-lg border ${
-                  userType === "person"
-                    ? "bg-cyan-600 text-white"
-                    : "bg-gray-100 text-gray-700"
-                }`}
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-cyan-600 text-white py-2 rounded-lg font-semibold hover:bg-cyan-700 transition disabled:opacity-60"
               >
-                Частно лице
+                {isSubmitting ? "Регистрация..." : "Регистрация"}
               </button>
-              <button
-                type="button"
-                onClick={() => setUserType("company")}
-                className={`flex-1 py-2 rounded-lg border ${
-                  userType === "company"
-                    ? "bg-cyan-600 text-white"
-                    : "bg-gray-100 text-gray-700"
-                }`}
-              >
-                Фирма
-              </button>
-            </div>
+              {submitCount > 0 && errorEntries.length > 0 && (
+                <div className="space-y-2 bg-red-50 border border-red-200 rounded p-3">
+                  {errorEntries.map(([key, msg]) => (
+                    <div
+                      key={key}
+                      className="flex items-center gap-2 text-sm text-red-700"
+                    >
+                      <MdOutlineError className="mt-0.5" />
+                      <span>{msg}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-            {userType === "company" && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center border rounded-lg px-3 py-2"
-              >
-                <FaUser className="text-gray-400 mr-2" />
-                <Field
-                  name="companyName"
-                  type="text"
-                  placeholder="Име на фирма"
-                  className="w-full outline-none bg-transparent"
-                />
-              </motion.div>
-            )}
-            {userType === "company" && (
-              <ErrorMessage
-                name="companyName"
-                component="div"
-                className="text-sm text-red-500"
-              />
-            )}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-cyan-600 text-white py-2 rounded-lg font-semibold hover:bg-cyan-700 transition disabled:opacity-60"
-            >
-              {isSubmitting ? "Регистрация..." : "Регистрация"}
-            </button>
+              <p className="text-sm text-gray-600 text-center mt-2">
+                Вече имате акаунт?{" "}
+                <span
+                  className="text-cyan-600 cursor-pointer hover:underline"
+                  onClick={() => switchForm(true)}
+                >
+                  Вход
+                </span>
+              </p>
 
-            <p className="text-sm text-gray-600 text-center mt-2">
-              Вече имате акаунт?{" "}
-              <span
-                className="text-cyan-600 cursor-pointer hover:underline"
-                onClick={() => switchForm(true)}
-              >
-                Вход
-              </span>
-            </p>
-          </Form>
-        )}
+            </Form>
+          );
+        }}
       </Formik>
     </motion.div>
   );
