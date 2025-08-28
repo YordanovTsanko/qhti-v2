@@ -12,12 +12,27 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    const authJson = localStorage.getItem("auth");
+    const parsedAuth = authJson ? JSON.parse(authJson) : null;
+    const token = parsedAuth?.accessToken;
+
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error)
 );
+
+// Handle 401 and refresh token
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
+  failedQueue = [];
+};
 
 api.interceptors.response.use(
   (response) => response,
@@ -27,19 +42,44 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      isRefreshing = true;
+
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const authJson = localStorage.getItem("auth");
+        const parsedAuth = authJson ? JSON.parse(authJson) : {};
+        const refreshToken = parsedAuth?.refreshToken;
+
+        if (!refreshToken) throw new Error("No refresh token found");
+
         const res = await axios.post(`${apiIP}auth/refresh`, { refreshToken });
 
-        localStorage.setItem("accessToken", res.data.accessToken);
-        localStorage.setItem("refreshToken", res.data.refreshToken);
+        parsedAuth.accessToken = res.data.accessToken;
+        parsedAuth.refreshToken = res.data.refreshToken;
+
+        localStorage.setItem("auth", JSON.stringify(parsedAuth));
 
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
+        processQueue(null, res.data.accessToken);
+
         return api(originalRequest);
       } catch (err) {
+        processQueue(err, null);
         localStorage.clear();
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
         return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 

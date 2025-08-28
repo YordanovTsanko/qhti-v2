@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import LoginForm from "../components/Auth/LoginForm";
@@ -21,6 +21,10 @@ const AuthPage = () => {
     navigate(login ? "/auth/login" : "/auth/register");
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("auth")) navigate("/");
+  }, [navigate]);
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-cyan-600 to-blue-800 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-4 sm:p-8 relative">
@@ -28,7 +32,11 @@ const AuthPage = () => {
           {isLogin ? (
             <LoginForm switchForm={switchForm} />
           ) : (
-            <RegisterForm switchForm={switchForm} userType={userType} setUserType={setUserType} />
+            <RegisterForm
+              switchForm={switchForm}
+              userType={userType}
+              setUserType={setUserType}
+            />
           )}
         </AnimatePresence>
       </div>
