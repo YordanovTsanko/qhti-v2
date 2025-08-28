@@ -23,7 +23,7 @@ const PopUpAd = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", stiffness: 100 }}
-          className="fixed bottom-5 right-5 w-80 md:w-96 bg-white shadow-xl rounded-lg p-4 z-50 flex flex-col"
+          className="fixed bottom-0 sm:bottom-5 sm:right-5 w-full sm:w-80 md:w-96 bg-white shadow-xl sm:rounded-lg p-4 z-50 flex flex-col"
         >
           <div className="flex justify-end mb-2">
             <button

@@ -14,11 +14,15 @@ import SelectedAd from "./components/Ads/SelectedAd";
 
 const AppContent = () => {
   const location = useLocation();
+
+
   const hideFooter =
     location.pathname === "/auth" || location.pathname.startsWith("/auth/");
-  
+
   const hideNavBar =
-    location.pathname === "/auth" || location.pathname.startsWith("/auth/") || location.pathname === ("/");
+    location.pathname === "/auth" ||
+    location.pathname.startsWith("/auth/") ||
+    location.pathname === "/";
 
   return (
     <div className="flex flex-col min-h-screen">
