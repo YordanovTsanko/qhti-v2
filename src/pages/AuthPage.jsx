@@ -23,7 +23,7 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-cyan-600 to-blue-800 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 relative">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-4 sm:p-8 relative">
         <AnimatePresence mode="wait">
           {isLogin ? (
             <LoginForm switchForm={switchForm} />

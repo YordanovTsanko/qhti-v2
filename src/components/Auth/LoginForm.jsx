@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { loginUser } from "../../redux/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const formVariants = {
   hidden: { opacity: 0, x: 50 },
@@ -17,6 +18,7 @@ const formVariants = {
 const LoginForm = ({ switchForm }) => {
   const { showToast } = useToastContext();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const initialValues = {
     email: "",
@@ -40,6 +42,7 @@ const LoginForm = ({ switchForm }) => {
       };
       await dispatch(loginUser(payload)).unwrap();
       showToast("✅ Успешен вход!");
+      navigate("/");
       resetForm();
     } catch (err) {
       const message = err || "Грешка при вход.";

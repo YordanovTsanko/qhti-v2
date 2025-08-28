@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { registerUser } from "../../redux/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const formVariants = {
   hidden: { opacity: 0, x: 50 },
@@ -17,6 +18,7 @@ const formVariants = {
 const RegisterForm = ({ switchForm, userType, setUserType }) => {
   const { showToast } = useToastContext();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const initialValues = {
     firstName: "",
@@ -28,10 +30,18 @@ const RegisterForm = ({ switchForm, userType, setUserType }) => {
   };
 
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().min(2, "Минимум 2 символа").required("Името е задължително"),
-    lastName: Yup.string().min(2, "Минимум 2 символа").required("Фамилията е задължително"),
-    email: Yup.string().email("Невалиден имейл").required("Имейла е задължителен"),
-    password: Yup.string().min(6, "Минимум 6 символа").required("Паролата е задължително"),
+    firstName: Yup.string()
+      .min(2, "Минимум 2 символа")
+      .required("Името е задължително"),
+    lastName: Yup.string()
+      .min(2, "Минимум 2 символа")
+      .required("Фамилията е задължително"),
+    email: Yup.string()
+      .email("Невалиден имейл")
+      .required("Имейла е задължителен"),
+    password: Yup.string()
+      .min(6, "Минимум 6 символа")
+      .required("Паролата е задължително"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Паролите не съвпадат")
       .required("Повторната парола е задължително"),
@@ -52,6 +62,7 @@ const RegisterForm = ({ switchForm, userType, setUserType }) => {
       };
       await dispatch(registerUser(payload)).unwrap();
       showToast("✅ Регистрацията е успешна!");
+      navigate("/");
       resetForm();
     } catch (err) {
       console.log(err);
@@ -234,7 +245,6 @@ const RegisterForm = ({ switchForm, userType, setUserType }) => {
                   Вход
                 </span>
               </p>
-
             </Form>
           );
         }}
